@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Static server verification page for HTTP connectivity testing." />
+    <title>Static Server Verification</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f4f5f7;
+        --panel: #ffffff;
+        --text: #1f2937;
+        --muted: #6b7280;
+        --accent: #2563eb;
+        --accent-soft: #dbeafe;
+        --success: #0f766e;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Roboto, Arial, sans-serif;
+        background: linear-gradient(135deg, var(--bg), #eceff3);
+        color: var(--text);
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      main {
+        width: min(720px, 100%);
+        background: var(--panel);
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+        padding: 32px;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+
+      h1 {
+        margin: 16px 0 10px;
+        font-size: clamp(1.8rem, 2.2vw, 2.4rem);
+        line-height: 1.2;
+      }
+
+      p {
+        margin: 0 0 14px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .status {
+        margin: 24px 0;
+        padding: 18px 20px;
+        border-left: 5px solid var(--success);
+        background: #f0fdfa;
+        border-radius: 10px;
+      }
+
+      .status strong {
+        color: var(--success);
+        font-size: 1.05rem;
+      }
+
+      code,
+      pre {
+        font-family: "Consolas", "Courier New", monospace;
+      }
+
+      pre {
+        margin: 12px 0 0;
+        padding: 14px 16px;
+        background: #111827;
+        color: #f9fafb;
+        border-radius: 10px;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 20px;
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+
+      .meta span {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        padding: 8px 10px;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <span class="badge">HTTP Static Content Check</span>
+      <h1>Static Server Verification Successful</h1>
+      <p>This page confirms that the web server is successfully serving a lightweight static HTML document over HTTP.</p>
+
+      <section class="status" aria-label="Verification status">
+        <strong>Server response verified</strong>
+        <pre>Target Server IP: 187.77.183.231</pre>
+      </section>
+
+      <p>The document is self-contained and uses no external dependencies, scripts, or assets.</p>
+
+      <div class="meta" aria-label="Deployment details">
+        <span>Deployment Runtime: {{TIMESTAMP}}</span>
+        <span>Protocol: HTTP</span>
+        <span>Content Type: text/html</span>
+      </div>
+    </main>
+  </body>
+</html>

@@ -12,21 +12,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Deploy to Hostinger VPS
+      - name: Verify API key and VM ID
         run: |
-          BODY=$(jq -n \
-            --arg project_name "fdq-test-server" \
-            --arg content "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docker-compose.yml" \
-            '{project_name: $project_name, content: $content}')
-
-          echo "Request body being sent:"
-          echo "$BODY"
-
-          curl -s -w "\nHTTP_STATUS:%{http_code}" -X POST \
-            "https://developers.hostinger.com/api/vps/v1/virtual-machines/${HOSTINGER_VM_ID}/docker" \
-            -H "Authorization: Bearer ${HOSTINGER_API_KEY}" \
-            -H "Content-Type: application/json" \
-            -d "$BODY"
+          curl -s -w "\nHTTP_STATUS:%{http_code}" \
+            "https://developers.hostinger.com/api/vps/v1/virtual-machines" \
+            -H "Authorization: Bearer ${HOSTINGER_API_KEY}"
         env:
-          HOSTINGER_VM_ID: ${{ secrets.HOSTINGER_VM_ID }}
           HOSTINGER_API_KEY: ${{ secrets.HOSTINGER_API_KEY }}

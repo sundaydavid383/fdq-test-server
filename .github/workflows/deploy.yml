@@ -12,10 +12,51 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Verify API key and VM ID
+      - name: Verify Hostinger API access
         run: |
-          curl -s -w "\nHTTP_STATUS:%{http_code}" \
+          STATUS=$(curl -s -o response.json -w "%{http_code}" \
             "https://developers.hostinger.com/api/vps/v1/virtual-machines" \
-            -H "Authorization: Bearer ${HOSTINGER_API_KEY}"
+            -H "Authorization: Bearer ${HOSTINGER_API_KEY}")
+
+          echo "Verification HTTP status: $STATUS"
+
+          if [ "$STATUS" -ne 200 ]; then
+            echo "::error::Could not authenticate with Hostinger API (status $STATUS). Check that HOSTINGER_API_KEY is valid."
+            cat response.json
+            exit 1
+          fi
+
+          echo "API key verified successfully."
         env:
+          HOSTINGER_API_KEY: ${{ secrets.HOSTINGER_API_KEY }}
+
+      - name: Deploy Docker Compose project to Hostinger VPS
+        run: |
+          COMPOSE_URL="https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docker-compose.yml"
+
+          BODY=$(jq -n \
+            --arg project_name "fdq-test-server-v2" \
+            --arg content "$COMPOSE_URL" \
+            '{project_name: $project_name, content: $content}')
+
+          echo "Deploying project 'fdq-test-server' using compose file at: $COMPOSE_URL"
+
+          STATUS=$(curl -s -o response.json -w "%{http_code}" -X POST \
+            "https://developers.hostinger.com/api/vps/v1/virtual-machines/${HOSTINGER_VM_ID}/docker" \
+            -H "Authorization: Bearer ${HOSTINGER_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "$BODY")
+
+          echo "Deploy request HTTP status: $STATUS"
+          echo "Response body:"
+          cat response.json
+
+          if [ "$STATUS" -ge 200 ] && [ "$STATUS" -lt 300 ]; then
+            echo "Deployment request accepted successfully."
+          else
+            echo "::error::Deployment failed with HTTP status $STATUS. See response body above for details."
+            exit 1
+          fi
+        env:
+          HOSTINGER_VM_ID: ${{ secrets.HOSTINGER_VM_ID }}
           HOSTINGER_API_KEY: ${{ secrets.HOSTINGER_API_KEY }}
